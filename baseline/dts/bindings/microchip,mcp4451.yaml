@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+
+description: |
+  Microchip MCP4451 quad 8-bit (257 tap) volatile digital potentiometer with
+  an I2C interface. Wipers are written with a two-byte command:
+  (memory address << 4) | D8, then D7..D0.
+
+compatible: "microchip,mcp4451"
+
+include: i2c-device.yaml

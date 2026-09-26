@@ -1,0 +1,15 @@
+# Power Profiler Kit II (PCA63100)
+#
+# SPDX-License-Identifier: Apache-2.0
+
+config BOARD_HAS_NRF5_BOOTLOADER
+	bool "Board has the Nordic nRF5 bootloader"
+	default y
+	depends on BOARD_PPK2
+	help
+	  A stock Power Profiler Kit II ships with the Nordic nRF5 bootloader
+	  programmed at the bottom of flash; that is what the nRF Connect
+	  desktop apps talk to when they update the kit over USB. Leave this
+	  enabled to link the application above the bootloader and keep DFU
+	  working. Disable it if you have erased the bootloader and program the
+	  whole of flash over SWD instead.

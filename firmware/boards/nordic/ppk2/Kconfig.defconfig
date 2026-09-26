@@ -1,0 +1,20 @@
+# Power Profiler Kit II (PCA63100) board configuration
+#
+# SPDX-License-Identifier: Apache-2.0
+
+if BOARD_PPK2
+
+config HW_STACK_PROTECTION
+	default ARCH_HAS_STACK_PROTECTION
+
+# Leave the factory nRF5 bootloader intact by linking the application above
+# it. See BOARD_HAS_NRF5_BOOTLOADER in Kconfig.
+config FLASH_LOAD_OFFSET
+	default 0x1000
+	depends on BOARD_HAS_NRF5_BOOTLOADER && !USE_DT_CODE_PARTITION
+
+# USB is the only interface the enclosure exposes and PCA63100 breaks out no
+# UART pins, so the console has to ride on CDC ACM.
+source "boards/common/usb/Kconfig.cdc_acm_serial.defconfig"
+
+endif # BOARD_PPK2

@@ -1,0 +1,7 @@
+board:
+  name: ppk2
+  full_name: Power Profiler Kit II (PCA63100)
+  vendor: nordic
+  socs:
+  # U12 on PCA63100 rev 1.0.1 is an nRF52840-QIAA (aQFN73).
+  - name: nrf52840

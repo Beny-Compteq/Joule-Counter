@@ -1,0 +1,83 @@
+# SPDX-License-Identifier: Apache-2.0
+
+mainmenu "Power Profiler Kit II firmware"
+
+menu "PPK2"
+
+config PPK2_USB_VID
+	hex "USB vendor ID"
+	default 0x1915
+	help
+	  The desktop Power Profiler app only lists devices carrying Nordic's
+	  vendor ID (nrf-device-lib's "nordicUsb" trait).
+
+config PPK2_USB_PID
+	hex "USB product ID"
+	default 0xC00A
+	help
+	  The desktop app recognises a PPK2 by idProduct == 0xC00A.
+
+config PPK2_USB_MANUFACTURER
+	string "USB manufacturer string"
+	default "Nordic Semiconductor"
+
+config PPK2_USB_PRODUCT
+	string "USB product string"
+	default "PPK2"
+
+config PPK2_DFU_SEMVER
+	string "Version string served on the DFU trigger interface"
+	default "power_profiler_kit_2 1.2.4-community"
+	help
+	  nrf-device-lib reads this string to decide whether the desktop app
+	  should offer to reprogram the kit. The default matches the firmware
+	  release the app bundles, so the app leaves this firmware alone.
+
+config PPK2_FW_VERSION_MAJOR
+	int "Firmware major version reported in DFU info"
+	default 1
+
+config PPK2_FW_VERSION_MINOR
+	int "Firmware minor version reported in DFU info"
+	default 2
+
+config PPK2_DEFAULT_VDD_MV
+	int "Source-mode output voltage used when the EEPROM holds none (mV)"
+	range 800 5000
+	default 3000
+
+config PPK2_DISCARD_SWITCH_SAMPLES
+	bool "Drop samples taken while the range switches are in transition"
+	default y
+	help
+	  The analog front end reports an inconsistent switch pattern for a few
+	  microseconds while it changes range. Such samples carry no usable
+	  current reading; dropping them keeps the sample counter contiguous so
+	  the desktop app never sees them.
+
+config PPK2_SAMPLE_RING_SAMPLES
+	int "Sample ring buffer depth (samples, power of two)"
+	default 4096
+	help
+	  Eight 512-sample blocks by default: enough to ride out USB scheduling
+	  jitter without dropping data. 16 KiB of RAM.
+
+config PPK2_USB_TX_INFLIGHT
+	int "Sample blocks queued to the USB controller at once"
+	range 1 8
+	default 4
+
+config PPK2_STREAM_KEEPS_CPU_AWAKE
+	bool "Skip WFI in the idle thread while the current stream runs"
+	default y
+	select ARM_ON_ENTER_CPU_IDLE_HOOK
+	help
+	  Waking the CPU from WFI takes about 12.5 us on this kit, longer than
+	  the 10 us sample period, so an idle CPU services only every other
+	  conversion. With this enabled the idle thread spins instead of
+	  sleeping while sampling is active. The kit is USB powered and its own
+	  consumption is not what it measures, so nothing is lost.
+
+endmenu
+
+source "Kconfig.zephyr"

@@ -1,0 +1,18 @@
+identifier: ppk2/nrf52840
+name: Power Profiler Kit II
+type: mcu
+arch: arm
+ram: 256
+flash: 1024
+toolchain:
+  - gnuarmemb
+  - xtools
+  - zephyr
+supported:
+  - adc
+  - eeprom
+  - gpio
+  - i2c
+  - usb_device
+  - watchdog
+vendor: nordic

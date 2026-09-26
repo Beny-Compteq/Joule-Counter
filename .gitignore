@@ -1,0 +1,59 @@
+# --- Zephyr / nRF Connect SDK build output ------------------------------------
+# Matches baseline/build/ and any sibling build trees at any depth.
+build/
+build-*/
+twister-out/
+twister-out.*/
+
+# west workspace state, if this ever becomes one. west.yml itself stays tracked.
+.west/
+
+# --- Python -------------------------------------------------------------------
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# --- Node / Joule-Counter (nRF Connect for Desktop app) -----------------------
+node_modules/
+dist/
+npm-debug.log
+log.txt
+jest.json
+*.db
+.idea/
+
+# --- Editors / IDE ------------------------------------------------------------
+# The nRF Connect and CMake Tools extensions write machine-specific paths in
+# here. Un-ignore individual files if a shared build configuration is wanted.
+.vscode/
+*.code-workspace
+.cache/
+compile_commands.json
+
+# --- Claude Code --------------------------------------------------------------
+# settings.json is shared; settings.local.json is per-machine.
+.claude/settings.local.json
+
+# --- Altium ------------------------------------------------------------------
+# Altium regenerates these beside the sources in ref/. The design files
+# themselves (.PrjPCB, .SchDoc, .PcbDoc, .IntLib, .Harness) and the checked-in
+# "Production files" and "Schematic_Layout pdf files" are deliberately tracked.
+History/
+__Previews/
+Project Logs*/
+Project Outputs*/
+.Zip Backup/
+*.$$$
+*.~(*)
+*.PrjPcbStructure
+
+# --- OS -----------------------------------------------------------------------
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+ref/

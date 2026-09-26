@@ -1,0 +1,42 @@
+/*
+ * Copyright (c) 2015 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
+ */
+
+import { numberOfDigitalChannels } from '../../../globals';
+import { getSingleBitState } from '../../../utils/bitConversion';
+import bitDataStorage, { type BitDataStorage } from './bitDataStorage';
+import { type DigitalChannelStates, type TimestampType } from './dataTypes';
+
+export interface BitDataSelector {
+    bitDataStorage: BitDataStorage;
+    digitalChannelsToCompute: number[];
+    initialise: (digitalChannelsToCompute: number[]) => void;
+    processBits: (bits: number, timestamp: TimestampType) => void;
+    getLineData: () => DigitalChannelStates[];
+}
+
+export default (): BitDataSelector => ({
+    bitDataStorage: bitDataStorage(),
+    digitalChannelsToCompute: new Array(numberOfDigitalChannels),
+
+    initialise(digitalChannelsToCompute) {
+        this.bitDataStorage.initialise(digitalChannelsToCompute);
+        this.digitalChannelsToCompute = digitalChannelsToCompute;
+    },
+
+    processBits(bits, timestamp) {
+        this.digitalChannelsToCompute.forEach(i => {
+            this.bitDataStorage.storeBit(
+                timestamp,
+                i,
+                getSingleBitState(bits, i),
+            );
+        });
+    },
+
+    getLineData() {
+        return this.bitDataStorage.getLineData();
+    },
+});

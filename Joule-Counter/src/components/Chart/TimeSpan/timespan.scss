@@ -1,0 +1,79 @@
+/*
+ * Copyright (c) 2021 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
+ */
+@import '~@nordicsemiconductor/pc-nrfconnect-shared/styles';
+
+.timespan {
+    margin-left: 64px;
+    height: 1rem;
+    position: relative;
+
+    &.selection {
+        height: 26px;
+        margin-top: -10px;
+        padding-top: 10px;
+        overflow: 'hidden';
+    }
+
+    &.offset {
+        height: 26px;
+        margin-top: -10px;
+        overflow: initial !important;
+    }
+
+    .span {
+        line-height: 1rem;
+        text-align: center;
+        font-size: 8pt;
+        position: absolute;
+        border-style: solid;
+        border-color: $gray-100;
+        border-width: 0 1px;
+        .value {
+            padding: 0 0.5rem;
+            background-color: $white;
+            z-index: 1;
+            width: fit-content;
+            margin: auto;
+            position: relative;
+        }
+    }
+    .span::after {
+        content: '';
+        top: 50%;
+        border-top: 1px solid $gray-100;
+        display: block;
+        position: absolute;
+        width: 100%;
+    }
+
+    .cursor {
+        position: absolute;
+        top: 0;
+        height: 26px;
+        width: 11px;
+        margin-left: -5.5px;
+        cursor: grab;
+        z-index: 2;
+    }
+    svg {
+        pointer-events: none;
+        stroke-width: 0;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: $gray-700;
+        line {
+            stroke-width: 1;
+            stroke: $gray-50;
+        }
+    }
+
+    .triggerOffset {
+        svg {
+            fill: $nordic-blue;
+            transform: rotate(180deg);
+        }
+    }
+}

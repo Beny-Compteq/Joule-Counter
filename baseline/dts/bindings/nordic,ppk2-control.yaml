@@ -1,0 +1,65 @@
+# SPDX-License-Identifier: Apache-2.0
+
+description: |
+  Control and status lines between the nRF52840 and the Power Profiler
+  Kit II analog front end, supplies and logic-port level translator.
+
+compatible: "nordic,ppk2-control"
+
+include: base.yaml
+
+properties:
+  vout-en-gpios:
+    type: phandle-array
+    required: true
+    description: Connects VDUT- to the VOUT terminal (DUT power on).
+
+  vldo-en-gpios:
+    type: phandle-array
+    required: true
+    description: Connects the ADP1708 LDO output to VDUT+ (source-meter mode).
+
+  vext-en-gpios:
+    type: phandle-array
+    required: true
+    description: Connects the VIN terminal to VDUT+ (ampere-meter mode).
+
+  reg-en-gpios:
+    type: phandle-array
+    required: true
+    description: Enables the ADP2504 buck-boost and ADP1708 LDO.
+
+  ana-en-gpios:
+    type: phandle-array
+    required: true
+    description: Enables the ADP5072 +7 V / -2 V analog supply.
+
+  lp-en-gpios:
+    type: phandle-array
+    required: true
+    description: Output enable of the FXMA108 logic-port level translator.
+
+  cal-gpios:
+    type: phandle-array
+    required: true
+    description: |
+      Calibration loads switched across VDUT+/VDUT-, in the order
+      100 kOhm, 10 kOhm, 1 kOhm, 100 Ohm.
+
+  sw-gpios:
+    type: phandle-array
+    required: true
+    description: |
+      Range-switch status inputs SW1..SW4. The comparators on the current
+      measurement sheet drive these; a high level means that shunt is
+      bypassed. All four must sit on GPIO port 0.
+
+  lp-data-gpios:
+    type: phandle-array
+    required: true
+    description: Logic-port inputs D0..D7, contiguous on GPIO port 0.
+
+  ext-usb-gpios:
+    type: phandle-array
+    required: true
+    description: Divided-down VBUS of the auxiliary USB connector J1.

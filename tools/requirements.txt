@@ -1,0 +1,4 @@
+pyserial>=3.5
+# dfu_trigger_probe.py only
+pyusb>=1.2
+libusb-package>=1.0

@@ -1,0 +1,69 @@
+{
+    "name": "joule-counter",
+    "version": "0.1.0",
+    "displayName": "Joule Counter",
+    "description": "Joule meter for the Nordic Power Profiler Kit II: current, voltage, power and energy",
+    "homepage": "https://github.com/nordicsemi/pc-nrfconnect-ppk",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/nordicsemi/pc-nrfconnect-ppk.git"
+    },
+    "author": "Nordic Semiconductor ASA",
+    "license": "SEE LICENSE IN LICENSE",
+    "main": "dist/bundle.js",
+    "nrfConnectForDesktop": {
+        "html": "dist/index.html",
+        "nrfutil": {
+            "device": [
+                "2.10.2"
+            ]
+        },
+        "nrfutilCore": "8.1.1"
+    },
+    "engines": {
+        "nrfconnect": ">=5.2.0"
+    },
+    "files": [
+        "dist/",
+        "resources/icon.*",
+        "firmware/*",
+        "worker/*",
+        "icon.png",
+        "LICENSE",
+        "Changelog.md"
+    ],
+    "scripts": {
+        "watch": "run-p --silent --continue-on-error watch:*",
+        "watch:build": "run-esbuild --watch",
+        "watch:types": "tsc --noEmit --pretty --watch --preserveWatchOutput",
+        "build:dev": "run-esbuild",
+        "build:prod": "run-esbuild --prod",
+        "test": "jest",
+        "check:app": "check-app-properties",
+        "check": "run-p --silent --continue-on-error --print-label check:*",
+        "check:lint": "eslint --color .",
+        "check:types": "check-for-typescript tsc --noEmit --pretty",
+        "check:license": "nrfconnect-license check",
+        "nordic-publish": "node ./dist/nordic-publish.js"
+    },
+    "devDependencies": {
+        "@nordicsemiconductor/pc-nrfconnect-shared": "^248.0.0",
+        "@types/archiver": "^6.0.2",
+        "@types/fs-extra": "^11.0.4",
+        "@types/redux-mock-store": "^1.0.3",
+        "@types/unzipper": "^0.10.9",
+        "bson": "4.6.5",
+        "chart.js": "^4.4.2",
+        "mathjs": "^10.6.3",
+        "react-chartjs-2": "^5.2.0",
+        "redux-mock-store": "^1.5.4",
+        "unzipper": "^0.10.14"
+    },
+    "prettier": "@nordicsemiconductor/pc-nrfconnect-shared/config/prettier.config.js",
+    "dependencies": {
+        "archiver": "^6.0.1"
+    },
+    "bundleDependencies": [
+        "archiver"
+    ]
+}

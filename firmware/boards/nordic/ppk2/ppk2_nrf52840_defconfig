@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: Apache-2.0
+
+CONFIG_ARM_MPU=y
+
+CONFIG_GPIO=y
+
+# PCA63100 fits only the 32 MHz HFXO (X1). There is no 32.768 kHz crystal,
+# because P0.00/XL1 and P0.01/XL2 drive the SW1/SW2 range-switch controls
+# instead, so LFCLK has to come from somewhere else. Synthesising it from
+# HFCLK costs nothing here -- the kit is always USB powered -- and is far more
+# accurate than the RC oscillator, which matters for sample timing.
+CONFIG_CLOCK_CONTROL_NRF_K32SRC_SYNTH=y

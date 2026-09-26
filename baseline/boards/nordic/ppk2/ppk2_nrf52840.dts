@@ -1,0 +1,206 @@
+/*
+ * Nordic Power Profiler Kit II (PCA63100 rev 1.0.1).
+ *
+ * Every connection below is taken from the Altium netlist export in ref/
+ * (netlist.NET), which lists each net as explicit component pads.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+#include <nordic/nrf52840_qiaa.dtsi>
+#include <nordic/nrf52840_partition.dtsi>
+#include "ppk2_nrf52840-pinctrl.dtsi"
+
+/ {
+	model = "Nordic Power Profiler Kit II";
+	compatible = "nordic,ppk2";
+
+	chosen {
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+	};
+
+	pwmleds: pwmleds {
+		compatible = "pwm-leds";
+
+		/* LD3 and LD4 are common-anode to P3V3 and sit in parallel on
+		 * the same three nets, so each channel drives both LEDs.
+		 *
+		 * Normal polarity despite the common anode: the pin does not
+		 * reach the LED directly but gates an N-channel MOSFET (Q1/Q15,
+		 * DMN2050LFDB) whose source is grounded and which sinks the
+		 * cathode side, so a high level turns the LED on. R99-R101 pull
+		 * the gates down, keeping the LEDs dark while the pins float
+		 * during reset.
+		 */
+		led_red: pwm_led_0 {
+			pwms = <&pwm0 0 PWM_MSEC(4) PWM_POLARITY_NORMAL>;
+			label = "Status LED red";
+		};
+
+		led_green: pwm_led_1 {
+			pwms = <&pwm0 1 PWM_MSEC(4) PWM_POLARITY_NORMAL>;
+			label = "Status LED green";
+		};
+
+		led_blue: pwm_led_2 {
+			pwms = <&pwm0 2 PWM_MSEC(4) PWM_POLARITY_NORMAL>;
+			label = "Status LED blue";
+		};
+	};
+
+	ppk2_control: ppk2-control {
+		compatible = "nordic,ppk2-control";
+
+		/* The three power switches (Q2, Q14, Q16) are N-channel high-side
+		 * pairs whose gates R37/R104/R105 pull up to the +8 V rail: they
+		 * conduct when left alone. The MCU pin drives Q1/Q17, which pull
+		 * that gate to ground and open the switch. So the pin is active
+		 * LOW for "connected", and the 1 MOhm pull-ups to 3V3 (R39, R106,
+		 * R107) keep everything disconnected through reset. Confirmed on
+		 * hardware: with this pin driven high, VDUT+ read 26 mV while the
+		 * LDO behind it sat at 2.8 V.
+		 */
+		vout-en-gpios = <&gpio1 4 GPIO_ACTIVE_LOW>;
+		vldo-en-gpios = <&gpio0 7 GPIO_ACTIVE_LOW>;
+		vext-en-gpios = <&gpio0 6 GPIO_ACTIVE_LOW>;
+
+		/* The calibration loads are a single N-channel stage (Q4, Q11)
+		 * straight across the terminals, pulled down by 1 MOhm: active
+		 * high, off at reset.
+		 */
+		cal-gpios = <&gpio0 20 GPIO_ACTIVE_HIGH>,	/* 100 kOhm, R40 */
+			    <&gpio0 21 GPIO_ACTIVE_HIGH>,	/*  10 kOhm, R58 */
+			    <&gpio0 22 GPIO_ACTIVE_HIGH>,	/*   1 kOhm, R33 */
+			    <&gpio0 23 GPIO_ACTIVE_HIGH>;	/* 100  Ohm, R38 */
+
+		/* Regulator and analog-supply enables go straight to the ICs. */
+		reg-en-gpios = <&gpio1 13 GPIO_ACTIVE_HIGH>;
+		ana-en-gpios = <&gpio0 8 GPIO_ACTIVE_HIGH>;
+		lp-en-gpios = <&gpio0 9 GPIO_ACTIVE_HIGH>;
+
+		/* SW1..SW4 are pulled up by R43/R47/R51/R55 and pulled low by
+		 * Q6/Q8 while a shunt is in circuit, so a high level means that
+		 * shunt is bypassed. The MCU can only observe them.
+		 */
+		sw-gpios = <&gpio0 0 GPIO_ACTIVE_HIGH>,
+			   <&gpio0 1 GPIO_ACTIVE_HIGH>,
+			   <&gpio0 26 GPIO_ACTIVE_HIGH>,
+			   <&gpio0 27 GPIO_ACTIVE_HIGH>;
+
+		lp-data-gpios = <&gpio0 10 GPIO_ACTIVE_HIGH>,
+				<&gpio0 11 GPIO_ACTIVE_HIGH>,
+				<&gpio0 12 GPIO_ACTIVE_HIGH>,
+				<&gpio0 13 GPIO_ACTIVE_HIGH>,
+				<&gpio0 14 GPIO_ACTIVE_HIGH>,
+				<&gpio0 15 GPIO_ACTIVE_HIGH>,
+				<&gpio0 16 GPIO_ACTIVE_HIGH>,
+				<&gpio0 17 GPIO_ACTIVE_HIGH>;
+
+		ext-usb-gpios = <&gpio1 9 GPIO_ACTIVE_HIGH>;
+	};
+
+	aliases {
+		led0 = &led_red;
+		led1 = &led_green;
+		led2 = &led_blue;
+		eeprom-0 = &eeprom;
+		watchdog0 = &wdt0;
+	};
+};
+
+&uicr {
+	/* P0.09 and P0.10 carry LP_EN and LP_D0 of the logic-port header, so
+	 * the NFCT pins have to come up as plain GPIOs.
+	 */
+	nfct-pins-as-gpios;
+	gpio-as-nreset;
+};
+
+&gpiote {
+	status = "okay";
+};
+
+&gpio0 {
+	status = "okay";
+	/* P0.18 is nRESET and P0.19 sits on the same RESET net, which is how
+	 * firmware reboots the kit into the bootloader. Neither is free.
+	 */
+	gpio-reserved-ranges = <18 2>;
+	gpio-line-names =
+		"SW1_ONOFF", "SW2_ONOFF", "VREF_IA/AIN0", "VLDO/AIN1",
+		"VBB/AIN2", "VIN/AIN3", "VEXT_EN", "VLDO_EN",
+		"ANA_EN", "LP_EN", "LP_D0", "LP_D1",
+		"LP_D2", "LP_D3", "LP_D4", "LP_D5",
+		"LP_D6", "LP_D7", "RESET", "RESET_TRIGGER",
+		"CAL100K", "CAL10K", "CAL1K", "CAL100",
+		"SDA", "SCL", "SW3_ONOFF", "SW4_ONOFF",
+		"VDUT/AIN4", "AGND/AIN5", "NTC/AIN6", "VSE_IA/AIN7";
+};
+
+&gpio1 {
+	status = "okay";
+	gpio-line-names =
+		"SWO", "", "", "",
+		"VOUT_EN", "LEDR", "LEDG", "LEDB",
+		"", "EXT_USB", "", "",
+		"", "REG_EN", "", "";
+};
+
+/* The eight measurement inputs all land on SAADC: AIN0 VREF_IA, AIN1 VLDO,
+ * AIN2 VBB, AIN3 VIN, AIN4 VDUT, AIN5 AGND, AIN6 NTC, AIN7 VSE_IA. The
+ * application drives the SAADC directly for the 100 kHz stream, so no Zephyr
+ * ADC driver instance is bound to this node.
+ */
+&adc {
+	status = "okay";
+};
+
+&pwm0 {
+	status = "okay";
+	pinctrl-0 = <&pwm0_default>;
+	pinctrl-1 = <&pwm0_sleep>;
+	pinctrl-names = "default", "sleep";
+};
+
+&i2c0 {
+	compatible = "nordic,nrf-twim";
+	status = "okay";
+	pinctrl-0 = <&i2c0_default>;
+	pinctrl-1 = <&i2c0_sleep>;
+	pinctrl-names = "default", "sleep";
+
+	/* U7, a 24CW160: 16 kbit, and where the kit keeps its calibration
+	 * data. Its write-protect pin is strapped low through R83.
+	 */
+	eeprom: eeprom@50 {
+		compatible = "microchip,24cw160", "atmel,at24";
+		reg = <0x50>;
+		size = <2048>;
+		pagesize = <32>;
+		address-width = <16>;
+		timeout = <5>;
+	};
+
+	/* U10, MCP4451 100 kOhm. Wiper 0 sets the buck-boost feedback,
+	 * wiper 1 the LDO feedback, wiper 3 the instrumentation-amplifier
+	 * offset; wiper 2 only reaches a test point.
+	 */
+	digipot: mcp4451@2c {
+		compatible = "microchip,mcp4451";
+		reg = <0x2c>;
+	};
+};
+
+zephyr_udc0: &usbd {
+	compatible = "nordic,nrf-usbd";
+	status = "okay";
+};
+
+/* Routes console, shell and logging onto a USB CDC ACM instance. Must come
+ * after the zephyr_udc0 label above, which it attaches the CDC ACM node to.
+ * The application registers this instance as the second serial port; the
+ * first carries the PPK2 protocol.
+ */
+#include <../boards/common/usb/cdc_acm_serial.dtsi>

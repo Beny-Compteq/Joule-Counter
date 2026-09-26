@@ -1,0 +1,33 @@
+/*
+ * Copyright (c) 2021 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
+ */
+
+@import '~@nordicsemiconductor/pc-nrfconnect-shared/styles';
+
+.btn-lg,
+.btn-sm {
+    border-radius: 0;
+}
+
+.input-group-addon {
+    min-width: 60px;
+}
+
+.form-group {
+    margin-bottom: 0;
+}
+.form-group:not(:first-child) {
+    .form-check {
+        padding-top: 1.25rem;
+    }
+}
+
+.modal {
+    background-color: #00000080;
+}
+
+.scroll-bar-white-bg {
+    @include scrollbars($white);
+}

@@ -48,6 +48,7 @@ import dragSelectPlugin, { type DragSelect } from './plugins/chart.dragSelect';
 import triggerLevelPlugin from './plugins/chart.triggerLevel';
 import triggerOriginPlugin from './plugins/chart.triggerOrigin';
 import zoomPanPlugin, { type ZoomPan } from './plugins/chart.zoomPan';
+import { missingDataPlugin, missingSegment } from './plugins/utility';
 
 const yAxisWidth = 64;
 const rightMargin = 32;
@@ -213,6 +214,8 @@ export default ({
                 pointBorderColor: dataColor,
                 pointHoverBorderColor: dataColor,
                 tension: snapping ? 0.2 : 0,
+                spanGaps: true,
+                segment: missingSegment,
                 label: 'Current',
                 xAxisID: 'xScale',
                 yAxisID: 'yScale',
@@ -229,6 +232,8 @@ export default ({
                 pointHoverRadius: 0,
                 pointHitRadius: 0,
                 tension: 0,
+                spanGaps: true,
+                segment: missingSegment,
                 label: 'Power',
                 xAxisID: 'xScale',
                 yAxisID: 'yScalePower',
@@ -243,6 +248,8 @@ export default ({
                 pointHoverRadius: 0,
                 pointHitRadius: 0,
                 tension: 0,
+                spanGaps: true,
+                segment: missingSegment,
                 label: 'Voltage',
                 xAxisID: 'xScale',
                 yAxisID: 'yScaleVoltage',
@@ -381,6 +388,7 @@ export default ({
     const dispatch = useDispatch();
 
     const plugins = [
+        missingDataPlugin,
         dragSelectPlugin,
         zoomPanPlugin,
         triggerLevelPlugin,

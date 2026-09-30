@@ -124,6 +124,7 @@ const updateChart = async (
     windowEnd: number,
     setData: (data: {
         ampereLineData: AmpereState[];
+        currentMeanLineData: AmpereState[];
         powerLineData: AmpereState[];
         voltageLineData: AmpereState[];
         bitsLineData: DigitalChannelStates[];
@@ -215,6 +216,11 @@ const updateChart = async (
         }));
     const powerLineData: AmpereState[] = meanLine(processedData.powerLine);
     const voltageLineData: AmpereState[] = meanLine(processedData.voltageLine);
+    // The current trace is a min/max band once zoomed out; the crosshair
+    // reads the mean instead, like it does for power and voltage.
+    const currentMeanLineData: AmpereState[] = meanLine(
+        processedData.averageLine,
+    );
 
     const missing = processedData.averageLine.reduce(
         (n, p) => n + (p.missing ?? 0),
@@ -230,6 +236,7 @@ const updateChart = async (
 
     setData({
         ampereLineData: processedData.ampereLineData,
+        currentMeanLineData,
         powerLineData,
         voltageLineData,
         bitsLineData: processedData.bitsLineData,
@@ -542,11 +549,13 @@ const Chart = () => {
 
     const [data, setData] = useState<{
         ampereLineData: AmpereState[];
+        currentMeanLineData: AmpereState[];
         powerLineData: AmpereState[];
         voltageLineData: AmpereState[];
         bitsLineData: DigitalChannelStates[];
     }>({
         ampereLineData: [],
+        currentMeanLineData: [],
         powerLineData: [],
         voltageLineData: [],
         bitsLineData: [],
@@ -605,6 +614,7 @@ const Chart = () => {
         if (xAxisMax === 0) {
             setData({
                 ampereLineData: [],
+                currentMeanLineData: [],
                 powerLineData: [],
                 voltageLineData: [],
                 bitsLineData: [],
@@ -724,6 +734,7 @@ const Chart = () => {
                     chartRef={chartRef}
                     cursorData={cursorData}
                     lineData={data.ampereLineData}
+                    currentMeanLineData={data.currentMeanLineData}
                     powerLineData={data.powerLineData}
                     voltageLineData={data.voltageLineData}
                 />

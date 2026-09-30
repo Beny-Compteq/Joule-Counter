@@ -63,7 +63,8 @@ You need a PPK2 (PCA63100 rev 1.0.1) and
 
 1. **Install the app.** Download `joule-counter-<version>.tgz` from this
    repository's Releases page and add it in nRF Connect for Desktop with
-   *Add local app*. Joule Counter appears under *Local apps*.
+   *Add local app*, or simply by drag-and-drop to the nRF Connect app.
+   Joule Counter appears under *Local apps*.
 
 2. **Plug the kit in and open the app.** It reads the firmware version off
    the kit and offers to program the Joule Counter firmware it bundles.
